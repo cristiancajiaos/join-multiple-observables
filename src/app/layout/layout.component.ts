@@ -1,7 +1,8 @@
 import { FooService } from './../services/foo.service';
 import { Component, OnInit } from '@angular/core';
 import { Post } from '../interfaces/post';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -21,12 +22,19 @@ export class LayoutComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    /*
     this.postSubscription = this.fooService.getPosts().subscribe(posts => {
       this.posts = posts;
     });
 
     this.commentSubscription = this.fooService.getComments().subscribe(comments => {
       this.comments = comments;
+    });
+    */
+
+    forkJoin([this.fooService.getPosts(),this.fooService.getComments()]).subscribe((results) => {
+      this.posts = results[0];
+      this.comments = results[1];
     });
   }
 
