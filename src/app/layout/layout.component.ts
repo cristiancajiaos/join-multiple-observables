@@ -1,4 +1,7 @@
+import { FooService } from './../services/foo.service';
 import { Component, OnInit } from '@angular/core';
+import { Post } from '../interfaces/post';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -7,9 +10,34 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LayoutComponent implements OnInit {
 
-  constructor() { }
+  posts: Post[] = [];
+  comments: Comment[] = [];
+
+  private postSubscription: Subscription;
+  private commentSubscription: Subscription;
+
+  constructor(
+    private fooService: FooService
+  ) { }
 
   ngOnInit(): void {
+    this.postSubscription = this.fooService.getPosts().subscribe(posts => {
+      this.posts = posts;
+    });
+
+    this.commentSubscription = this.fooService.getComments().subscribe(comments => {
+      this.comments = comments;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
+
+    if (this.commentSubscription) {
+      this.commentSubscription.unsubscribe();
+    }
   }
 
 }
